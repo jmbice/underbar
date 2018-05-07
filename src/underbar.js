@@ -193,8 +193,6 @@
   _.reduce = function(collection, iterator, accumulator) {
     var total;
 
-    accumulator || accumulator === 0 || accumulator === '' ? total = accumulator: total = collection[0];
-
     if (accumulator || accumulator === 0 || accumulator === ''){
       total = accumulator
       for (var j = 0; j < collection.length; j++){
