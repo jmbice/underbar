@@ -55,8 +55,7 @@
   _.each = function(collection, iterator) {
     if (typeof collection === 'object' && Array.isArray(collection)) {
       for (var j = 0; j < collection.length; j++){
-        var index = j;
-        iterator(collection[j], index, collection)
+        iterator(collection[j], j, collection)
       }
     } else if (typeof collection === 'object'){
       for (var keys in collection){
@@ -192,7 +191,25 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
+    var total;
+
+    accumulator || accumulator === 0 || accumulator === '' ? total = accumulator: total = collection[0];
+
+    if (accumulator || accumulator === 0 || accumulator === ''){
+      total = accumulator
+      for (var j = 0; j < collection.length; j++){
+        total = iterator(total, collection[j]);
+      }
+    } else {
+      total = collection[0]
+      for (var j = 1; j < collection.length; j++){
+        total = iterator(total, collection[j]);
+      }
+    }
+
+    return total
   };
+
 
   // Determine if the array or object contains a given value (using `===`).
   _.contains = function(collection, target) {
