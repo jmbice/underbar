@@ -111,14 +111,33 @@
   _.uniq = function(array, isSorted, iterator) {
     var uniqArray = [];
 
-    for (var j = 0; j < array.length; j++) {
-      if (isSorted){
-        uniqArray[uniqArray.length - 1] !== array[j] ? uniqArray.push(array[j]) : null;
-      } else {
-        uniqArray.includes(array[j]) ? null : uniqArray.push(array[j]);
+    if (isSorted && iterator){
+      var oneFalse = [];
+      var oneTrue = [];
+      for (var i = 0; i < array.length; i++){
+        if (iterator(array[i]) === true && oneTrue.length < 1){
+          uniqArray.push(array[i]);
+          oneTrue.push('one true');
+        } else if (iterator(array[i]) === false && oneFalse.length < 1){
+          uniqArray.push(array[i])
+          oneFalse.push('one false')
+        } else {
+          null;
+        }
+      }
+    } else {
+      for (var j = 0; j < array.length; j++) {
+        if (isSorted){
+          uniqArray[uniqArray.length - 1] !== array[j] ? uniqArray.push(array[j]) : null;
+        } else {
+          uniqArray.includes(array[j]) ? null : uniqArray.push(array[j]);
+        }
       }
     }
     return uniqArray
+///
+
+
   };
 
 
