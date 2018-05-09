@@ -57,16 +57,11 @@
       for (var j = 0; j < collection.length; j++){
         iterator(collection[j], j, collection)
       }
-    } else if (typeof collection === 'object'){
+    } else {
       for (var keys in collection){
         iterator(collection[keys], keys, collection)
       }
-    } else {
-      console.log('Jordan made a mistake. Kill him!');
     }
-
-
-
   };
 
   // Returns the index at which value can be found in the array, or -1 if value
@@ -190,25 +185,26 @@
   //     return total + number * number;
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
+
   _.reduce = function(collection, iterator, accumulator) {
     var total;
 
     if (Array.isArray(collection)){
       if (accumulator || accumulator === 0 || accumulator === '' || accumulator === false){
-        total = accumulator
+        total = accumulator;
         for (var j = 0; j < collection.length; j++){
-          total = iterator(total, collection[j]);
+          total = iterator(total, collection[j], collection);
         }
       } else {
-        total = collection[0]
+        total = collection[0];
         for (var j = 1; j < collection.length; j++){
-          total = iterator(total, collection[j]);
+          total = iterator(total, collection[j], collection);
         }
       }
     } else {
       total = accumulator;
       for (var keys in collection){
-        total = iterator(total, collection[keys])
+        total = iterator(total, collection[keys], keys)
       }
     }
     return total
@@ -230,13 +226,69 @@
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
-    // TIP: Try re-using reduce() here.
+    if (iterator){
+      return _.reduce(collection, function(accumulator, element){
+          iterator(element) ? accumulator : accumulator = false;
+          return accumulator;
+      }, true)
+    } else {
+      var isFalse = [];
+      for (var j = 0 ; j < collection.length; j++){
+        collection[j] === false ? isFalse.push(collection[j]) : null;
+      }
+      return isFalse.length > 0 ? false : true;
+    }
+
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
+    //"Truthy" means the value is not one of undefined, null, false, 0, NaN or an empty string "".
+    var isTruth = [];
+    if (collection.length === 0){
+      return false
+    } else if (iterator){
+      for (var j = 0; j < collection.length; j++){
+        var test = iterator(collection[j]);
+        if (test === 0 || test === false || test === null || test === NaN || test === '' || test === undefined){
+          null
+        } else {
+          isTruth.push(true);
+        }
+      }
+    } else {
+      for (var i = 0; i < collection.length; i++){
+        var test = collection[i];
+        if (test === 0 || test === false || test === null || test === NaN || test === '' || test === undefined){
+          null
+        } else {
+          isTruth.push(true);
+        }
+      }
+    }
+    return isTruth.length > 0 ? true : false
+
+
+    //ALTERNATIVELY:
+    // if (collection.length <= 0){
+    //   return false;
+    // }
+    // else if (iterator) {
+    //   for (var j = 0; j < collection.length; j++){
+    //     _.contains([0, false, '', null, NaN, undefined], iterator(collection[j])) ? null : isTruth.push(true);
+    //   }
+    //
+    // } else {
+    //   for (var j = 0; j < collection.length; j++){
+    //     _.contains([0, false, '', null, NaN, undefined], collection[j]) ? null : isTruth.push(true);
+    //
+    //   }
+    // }
+    // return isTruth.length > 0 ? true : false;
+
+    //Not sure if one has any kind of Time or Space advantage over the other...
   };
 
 
@@ -259,11 +311,28 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    for (var j = 1; j < arguments.length; j++){
+      for (var keys in arguments[j]){
+        arguments[0][keys] = arguments[j][keys]
+      }
+    }
+    return arguments[0]
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+
+    for (var j = 1; j < arguments.length; j++){
+      for (var keys in arguments[j]){
+        if (arguments[0][keys] || arguments[0][keys] === '' || arguments[0][keys] === 0 || Number.isNaN(arguments[0][keys])) {
+          null
+        } else {
+          arguments[0][keys] = arguments[j][keys];
+        }
+      }
+    }
+    return arguments[0]
   };
 
 
