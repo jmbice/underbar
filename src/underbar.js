@@ -193,18 +193,24 @@
   _.reduce = function(collection, iterator, accumulator) {
     var total;
 
-    if (accumulator || accumulator === 0 || accumulator === ''){
-      total = accumulator
-      for (var j = 0; j < collection.length; j++){
-        total = iterator(total, collection[j]);
+    if (Array.isArray(collection)){
+      if (accumulator || accumulator === 0 || accumulator === '' || accumulator === false){
+        total = accumulator
+        for (var j = 0; j < collection.length; j++){
+          total = iterator(total, collection[j]);
+        }
+      } else {
+        total = collection[0]
+        for (var j = 1; j < collection.length; j++){
+          total = iterator(total, collection[j]);
+        }
       }
     } else {
-      total = collection[0]
-      for (var j = 1; j < collection.length; j++){
-        total = iterator(total, collection[j]);
+      total = accumulator;
+      for (var keys in collection){
+        total = iterator(total, collection[keys])
       }
     }
-
     return total
   };
 
