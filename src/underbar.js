@@ -322,10 +322,9 @@
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
-
     for (var j = 1; j < arguments.length; j++){
       for (var keys in arguments[j]){
-        if (arguments[0][keys] || arguments[0][keys] === '' || arguments[0][keys] === 0 || Number.isNaN(arguments[0][keys])) {
+        if (arguments[0][keys] || arguments[0][keys] === '' || arguments[0][keys] === false || arguments[0][keys] === 0 || Number.isNaN(arguments[0][keys])) {
           null
         } else {
           arguments[0][keys] = arguments[j][keys];
