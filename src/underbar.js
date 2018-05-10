@@ -374,7 +374,18 @@
   // _.memoize should return a function that, when called, will check if it has
   // already computed the result for the given argument and return that value
   // instead if possible.
-  _.memoize = function(func) {
+
+  // || cache[...args] === '' || cache[...args] === false || cache[...args] === 0 || Number.isNaN(cache[...args])
+  _.memoize = function(fn) {
+    var cache = {};
+    return function(...args){
+      if (cache[args]) {
+        return cache[args];
+      } else {
+        cache[args] = fn.apply(this, args);
+        return cache[args];
+      }
+    }
   };
 
   // Delays a function for the given number of milliseconds, and then calls
