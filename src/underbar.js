@@ -7,7 +7,7 @@
   // seem very useful, but remember it--if a function needs to provide an
   // iterator when the user does not pass one in, this will be handy.
   _.identity = function(val) {
-    return val
+    return val;
   };
 
   /**
@@ -43,7 +43,7 @@
     } else if (n > array.length){
       return array;
     } else {
-      return array.slice(array.length-n)
+      return array.slice(array.length-n);
     }
   };
 
@@ -87,7 +87,7 @@
     for (var j = 0; j < collection.length; j++){
       test(collection[j]) === true ? passingArray.push(collection[j]) : null;
     }
-    return passingArray
+    return passingArray;
   };
 
   // Return all elements of an array that don't pass a truth test.
@@ -98,7 +98,7 @@
     for (var j = 0; j < collection.length; j++){
       test(collection[j]) === false ? passingArray.push(collection[j]) : null;
     }
-    return passingArray
+    return passingArray;
   };
 
   // Produce a duplicate-free version of the array.
@@ -109,10 +109,10 @@
       var oneFalse = [];
       var oneTrue = [];
       for (var i = 0; i < array.length; i++){
-        if (iterator(array[i]) === true && oneTrue.length < 1){
+        if (iterator(!!array[i]) === true && oneTrue.length < 1){
           uniqArray.push(array[i]);
           oneTrue.push('one true');
-        } else if (iterator(array[i]) === false && oneFalse.length < 1){
+        } else if (iterator(!!array[i]) === false && oneFalse.length < 1){
           uniqArray.push(array[i])
           oneFalse.push('one false')
         } else {
@@ -128,7 +128,7 @@
         }
       }
     }
-    return uniqArray
+    return uniqArray;
 ///
 
 
@@ -204,10 +204,10 @@
     } else {
       total = accumulator;
       for (var keys in collection){
-        total = iterator(total, collection[keys], keys)
+        total = iterator(total, collection[keys], keys);
       }
     }
-    return total
+    return total;
   };
 
 
@@ -248,27 +248,21 @@
     //"Truthy" means the value is not one of undefined, null, false, 0, NaN or an empty string "".
     var isTruth = [];
     if (collection.length === 0){
-      return false
+      return false;
     } else if (iterator){
       for (var j = 0; j < collection.length; j++){
         var test = iterator(collection[j]);
-        if (test === 0 || test === false || test === null || test === NaN || test === '' || test === undefined){
-          null
-        } else {
-          isTruth.push(true);
-        }
+        !!test === false ? null : isTruth.push(true);
+
       }
     } else {
       for (var i = 0; i < collection.length; i++){
         var test = collection[i];
-        if (test === 0 || test === false || test === null || test === NaN || test === '' || test === undefined){
-          null
-        } else {
-          isTruth.push(true);
-        }
+        !!test === false ? null : isTruth.push(true);
+
       }
     }
-    return isTruth.length > 0 ? true : false
+    return isTruth.length > 0 ? true : false;
 
 
     //ALTERNATIVELY:
@@ -375,15 +369,17 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
 
-  // || cache[...args] === '' || cache[...args] === false || cache[...args] === 0 || Number.isNaN(cache[...args])
   _.memoize = function(fn) {
     var cache = {};
+    var result;
+
     return function(...args){
-      if (cache[args]) {
-        return cache[args];
+      if (cache[JSON.stringify(args)]) {
+        return cache[JSON.stringify(args)];
       } else {
-        cache[args] = fn.apply(this, args);
-        return cache[args];
+        result = fn.apply(this, args);
+        cache[JSON.stringify(args)] = result;
+        return cache[JSON.stringify(args)]
       }
     }
   };
