@@ -109,10 +109,10 @@
       var oneFalse = [];
       var oneTrue = [];
       for (var i = 0; i < array.length; i++){
-        if (iterator(!!array[i]) === true && oneTrue.length < 1){
+        if (iterator(array[i]) === true && oneTrue.length < 1){
           uniqArray.push(array[i]);
           oneTrue.push('one true');
-        } else if (iterator(!!array[i]) === false && oneFalse.length < 1){
+        } else if (iterator(array[i]) === false && oneFalse.length < 1){
           uniqArray.push(array[i])
           oneFalse.push('one false')
         } else {
