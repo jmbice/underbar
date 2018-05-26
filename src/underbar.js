@@ -453,7 +453,7 @@
       }
     } else if (type === 'function'){
       for (var i = 0; i < fullCollection.length; i++){
-        result.push(functionOrKey.apply(fullCollection[i], [...fullCollection]));
+        result.push(functionOrKey.apply(fullCollection[i], fullCollection));
       }
     }
     return result;
