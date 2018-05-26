@@ -13,22 +13,22 @@
           return this.split('').reverse().join('');
         };
 
-        var reversedStrings = _.invoke(['dog', 'cat'], reverse);
+        var reversedStrings = _.invoke(['dog', 'cat'], reverse, 'friend', 'foe');
 
-        expect(reversedStrings).to.eql(['god', 'tac']);
+        expect(reversedStrings).to.eql(['god', 'tac', 'dneirf', 'eof']);
       });
 
     });
 
     describe('invoke, when provided a method name', function() {
       checkForNativeMethods(function() {
-        _.invoke(['dog', 'cat'], 'toUpperCase');
+        _.invoke(['dog', 'cat', 'loaf', 'bloowf'], 'toUpperCase');
       })
 
       it('runs the specified method on each item in the array, and returns a list of results', function() {
-        var upperCasedStrings = _.invoke(['dog', 'cat'], 'toUpperCase');
+        var upperCasedStrings = _.invoke(['dog', 'cat'], 'toUpperCase', 'loaf', 'bloowf');
 
-        expect(upperCasedStrings).to.eql(['DOG', 'CAT']);
+        expect(upperCasedStrings).to.eql(['DOG', 'CAT', 'LOAF', 'BLOOWF']);
       });
     });
 
