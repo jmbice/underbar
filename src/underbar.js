@@ -449,15 +449,14 @@
 
     if (type === 'string'){
       for (var j = 0; j < fullCollection.length; j++){
-        result.push(fullCollection[j][functionOrKey].apply(fullCollection[j])) ;
+        result.push(fullCollection[j][functionOrKey].call(fullCollection[j])) ;
       }
     } else if (type === 'function'){
       for (var i = 0; i < fullCollection.length; i++){
-        result.push(functionOrKey.apply(fullCollection[i], fullCollection));
+        result.push(functionOrKey.call(fullCollection[i]));
       }
     }
     return result;
-
   };
 
   // Sort the object's values by a criterion produced by an iterator.
@@ -465,7 +464,98 @@
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
   _.sortBy = function(collection, iterator) {
+    var unsorted = [];
+    var sorted;
+    var filtered = [];
+    var undefinedCount = 0;
+    var undefinedArray = [];
+
+    //sorting
+    var insertionSort = function(arr) {
+      let len = arr.length, value, i, j;
+
+      for(i = 1; i < len; i++) {
+        value = arr[i];
+        j = i - 1;
+        while (j >= 0 && arr[j] > value) {
+          arr[j+1] = arr[j];
+          j--;
+        }
+        arr[j+1] = value;
+      }
+      return arr;
+    }
+
+    //format input into unsorted array
+    for (var z = 0; z < collection.length; z++){
+      if (typeof collection[z] === 'object' && !Array.isArray(collection[z]) && typeof iterator === 'function'){
+        unsorted.push([iterator(collection[z]), '' + z]);
+      } else if (typeof iterator === 'function'){
+        collection[z] !== undefined ? unsorted.push(iterator(collection[z])) : undefinedCount++;
+      } else if (typeof collection[z] === 'string'){
+        unsorted.push([collection[z][iterator], z]);
+      }
+    }
+
+    //sort arrays, format response
+    sorted = insertionSort(unsorted);
+    if (typeof sorted[0] === 'string' || typeof sorted[0] === 'number'){
+      return undefinedCount > 0 ? sorted.concat(Array(undefinedCount).fill(undefined)) : sorted;
+    } else {
+      for (var m = 0; m < sorted.length; m++){
+        var index = sorted[m][1];
+        sorted[m][0] !== undefined ? filtered.push(collection[index]) : undefinedArray.push(collection[index]);
+      }
+      var side;
+      undefinedArray.length > 0 ? side = filtered.concat(undefinedArray) : side = filtered.slice();
+      return side;
+    }
   };
+
+
+    // Takes a multidimensional array and converts it to a one-dimensional array.
+    // The new array should contain all elements of the multidimensional array.
+    //
+    // Hint: Use Array.isArray to check if something is an array
+    _.flatten = function(nestedArray, result) {
+      var allFlat = [];
+      var flattenedOnce = [];
+
+      var canFlatten = function (e){
+        return Array.isArray(e);
+      };
+
+      var flattenOnce = function(array){
+        for (var j = 0; j < array.length; j++) {
+          if (canFlatten(array[j])){
+            for (var m = 0; m < array[j].length; m++){
+              flattenedOnce.push(array[j][m]);
+            }
+          } else {
+            flattenedOnce.push(array[j]);
+          }
+        }
+      };
+
+      var flattenAll = function(arr){
+        for (var z = 0; z < arr.length; z++){
+          if (canFlatten(arr[z])){
+            flattenAll(arr[z]);
+          } else {
+            allFlat.push(arr[z]);
+          }
+        }
+      };
+
+      if (!result){
+        flattenAll(nestedArray);
+        return allFlat
+      } else {
+        flattenOnce(nestedArray);
+        return flattenedOnce
+      }
+    };
+
 
   // Zip together two or more arrays with elements of the same index
   // going together.
@@ -473,23 +563,82 @@
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
-  };
+    let args = [...arguments];
+    let longest = 0;
+    let result = [];
 
-  // Takes a multidimensional array and converts it to a one-dimensional array.
-  // The new array should contain all elements of the multidimensional array.
-  //
-  // Hint: Use Array.isArray to check if something is an array
-  _.flatten = function(nestedArray, result) {
+    for (let i = 0; i < args.length; i++) {
+     args[i].length > longest ? longest = args[i].length : null;
+    }
+
+    for (let j = 0; j < longest; j++){
+      let inner = [];
+      for (let z = 0; z < args.length; z++){
+        inner.push(args[z][j])
+      }
+      result.push(inner);
+    }
+    return result;
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
+    let args = [...arguments];
+    let elementCount = {};
+    let sharedElements = [];
+
+    for (var i = 0; i < args.length; i++) {
+      for (var j = 0; j < args[i].length; j++) {
+        if(elementCount[args[i][j]]){
+          elementCount[args[i][j]]++
+        } else {
+          elementCount[args[i][j]] = 1;
+        }
+      }
+    }
+
+    for (var key in elementCount) {
+      if (elementCount.hasOwnProperty(key) && elementCount[key] > 1) {
+        sharedElements.push(key);
+      }
+    }
+    return sharedElements;
   };
 
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
   _.difference = function(array) {
+    let args = [...arguments];
+    let primaryArray = args.shift();
+    let elementCount = {};
+    let uniqueElements = [];
+
+    for (var m = 0; m < primaryArray.length; m++) {
+      if(elementCount[primaryArray[m]]){
+        elementCount[primaryArray[m]]++;
+      } else {
+        elementCount[primaryArray[m]] = 1;
+      }
+    }
+
+    for (var i = 0; i < args.length; i++) {
+      for (var j = 0; j < args[i].length; j++) {
+        if(elementCount[args[i][j]]){
+          elementCount[args[i][j]]++
+        } else {
+          null;
+        }
+      }
+    }
+
+    for (var key in elementCount) {
+      if (elementCount.hasOwnProperty(key) && elementCount[key] < 2) {
+        uniqueElements.push(Number(key));
+      }
+    }
+    return uniqueElements;
+
   };
 
   // Returns a function, that, when invoked, will only be triggered at most once
@@ -498,5 +647,19 @@
   //
   // Note: This is difficult! It may take a while to implement.
   _.throttle = function(func, wait) {
+    var calledOnce = false;
+
+    var resetCall = function(){
+      calledOnce ? calledOnce = false : null;
+    }
+
+    return function(){
+      if (!calledOnce){
+        func();
+        calledOnce = true;
+        setTimeout(resetCall, wait)
+      }
+    }
   };
+
 }());
