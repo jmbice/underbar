@@ -129,9 +129,6 @@
       }
     }
     return uniqArray;
-///
-
-
   };
 
 
@@ -307,10 +304,10 @@
   _.extend = function(obj) {
     for (var j = 1; j < arguments.length; j++){
       for (var keys in arguments[j]){
-        arguments[0][keys] = arguments[j][keys]
+        arguments[0][keys] = arguments[j][keys];
       }
     }
-    return arguments[0]
+    return arguments[0];
   };
 
   // Like extend, but doesn't ever overwrite a key that already
@@ -371,16 +368,13 @@
 
   _.memoize = function(fn) {
     var cache = {};
-    var result;
 
-    return function(...args){
-      if (cache[JSON.stringify(args)]) {
-        return cache[JSON.stringify(args)];
-      } else {
-        result = fn.apply(this, args);
-        cache[JSON.stringify(args)] = result;
-        return cache[JSON.stringify(args)]
+    return function(){
+      var args = JSON.stringify(arguments);
+      if (!cache[args]){
+        cache[args] = fn.apply(this, arguments);
       }
+      return cache[args];
     }
   };
 
@@ -525,35 +519,32 @@
         return Array.isArray(e);
       };
 
-      var flattenOnce = function(array){
-        for (var j = 0; j < array.length; j++) {
-          if (canFlatten(array[j])){
-            for (var m = 0; m < array[j].length; m++){
-              flattenedOnce.push(array[j][m]);
+      //if flatten once is the goal:
+      if (result){
+        for (var j = 0; j < nestedArray.length; j++) {
+          if (canFlatten(nestedArray[j])){
+            for (var m = 0; m < nestedArray[j].length; m++){
+              flattenedOnce.push(nestedArray[j][m]);
             }
           } else {
-            flattenedOnce.push(array[j]);
+            flattenedOnce.push(nestedArray[j]);
           }
         }
-      };
 
-      var flattenAll = function(arr){
-        for (var z = 0; z < arr.length; z++){
-          if (canFlatten(arr[z])){
-            flattenAll(arr[z]);
-          } else {
-            allFlat.push(arr[z]);
-          }
-        }
-      };
-
-      if (!result){
-        flattenAll(nestedArray);
-        return allFlat
-      } else {
-        flattenOnce(nestedArray);
-        return flattenedOnce
+      return flattenedOnce
       }
+
+      ///flatten everything is the goal:
+      for (var z = 0; z < nestedArray.length; z++){
+        if (canFlatten(nestedArray[z])){
+          var childArrays = _.flatten(nestedArray[z]);
+          allFlat = allFlat.concat(childArrays);
+        } else {
+          allFlat = allFlat.concat(nestedArray[z]);
+        }
+      }
+
+      return allFlat;
     };
 
 
@@ -562,8 +553,8 @@
   //
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
-  _.zip = function() {
-    let args = [...arguments];
+  _.zip = function(...args) {
+    // let args = [...arguments];
     let longest = 0;
     let result = [];
 
@@ -583,8 +574,8 @@
 
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
-  _.intersection = function() {
-    let args = [...arguments];
+  _.intersection = function(...args) {
+    // let args = [...arguments];
     let elementCount = {};
     let sharedElements = [];
 
